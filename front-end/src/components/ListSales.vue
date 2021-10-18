@@ -7,13 +7,14 @@
         <div class="list-item">
             <ul>
                 <li v-for="item in saleList.slice(0, 4)" v-bind:key="item.id">
-                    <div class="item" @click="move(item.itemId)">
+                    <div class="item">
                         <img
                             :src="baseImgUrl + item.itemImg.path"
                             alt="product"
                             style="width:100%"
+                            @click="move(item.itemId)"
                         />
-                        <div class="container">
+                        <div class="container" @click="move(item.itemId)">
                             <p>
                                 <b>Name : {{ item.itemName }}</b>
                             </p>
@@ -29,7 +30,7 @@
                             </p>
                         </div>
                         <button
-                            @click="a(item.id)"
+                            @click="buy(item.itemId, item.id)"
                             style="font-size:10px;
                                 margin-bottom: 12px"
                             type="button"
@@ -56,6 +57,8 @@ export default {
             saleList: [],
             baseImgUrl: "http://127.0.0.1:8089/",
             renderKey: 0,
+            attrId: "",
+            attrInfo: "",
         };
     },
     mounted() {
@@ -68,15 +71,43 @@ export default {
                 this.renderKey++;
             }, 1000);
         },
-        a(id) {
-            console.log(id);
-        },
         async get() {
             try {
                 const res = await axios.get(`http://localhost:3000/flashsales`);
                 this.saleList = this.cutSrc(res.data);
             } catch (e) {
                 console.log(e);
+            }
+        },
+        async buy(id, saleId) {
+            if (localStorage.accessToken) {
+                try {
+                    const res = await axios.get(
+                        `http://localhost:3000/admin/attribute/${id}`
+                    );
+                    this.attrId = res.data[0].id;
+                    if (res.data[0].color) {
+                        res;
+                    }
+                    const create = await axios.post(
+                        `http://localhost:3000/myorder/create`,
+                        {
+                            flashsaleId: saleId,
+                            itemQuantity: 1,
+                            itemAttributeId: this.attrId,
+                        },
+                        {
+                            headers: {
+                                token: `Bearer ${localStorage.accessToken}`,
+                            },
+                        }
+                    );
+                    console.log(create);
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                this.login();
             }
         },
         timeLeft(end) {
@@ -114,6 +145,9 @@ export default {
         },
         move(id) {
             this.$router.push(`/product/${id}`);
+        },
+        login() {
+            this.$router.push(`/auth/login`);
         },
     },
 };

@@ -94,7 +94,7 @@ export default {
             return newData;
         },
         move(id) {
-            console.log(id);
+            this.$router.push(`/product/${id}`);
         },
     },
 };

@@ -22,9 +22,8 @@ Attribute.init(
     color: {
       type: DataTypes.STRING,
     },
-    type: {
+    size: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   {

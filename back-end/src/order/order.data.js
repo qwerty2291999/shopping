@@ -13,8 +13,12 @@ class OrderData {
   }
 
   static async createOne(any) {
-    const doc = await Order.create(any);
-    return doc;
+    try {
+      const doc = await Order.create(any);
+      return doc;
+    } catch (e) {
+      return e;
+    }
   }
 
   static async updateOrderMain(id, any) {

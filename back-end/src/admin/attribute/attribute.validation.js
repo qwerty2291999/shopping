@@ -3,8 +3,8 @@ const Joi = require('joi');
 
 const joiCreate = Joi.object({
   itemId: Joi.number().required(),
-  color: Joi.string().required(),
-  type: Joi.string().required(),
+  color: Joi.string(),
+  size: Joi.string(),
 });
 const joiId = Joi.object({
   itemId: Joi.number().required(),
@@ -12,6 +12,6 @@ const joiId = Joi.object({
 const joiEdit = Joi.object({
   id: Joi.number().required(),
   color: Joi.string(),
-  type: Joi.string().required(),
+  size: Joi.string(),
 });
 module.exports = { joiCreate, joiId, joiEdit };

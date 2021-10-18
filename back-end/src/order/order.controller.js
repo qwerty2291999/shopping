@@ -94,12 +94,12 @@ async function createOrder(req, res, next) {
       data.categoryId = checkSaleStatus.categoryId;
       data.attributeId = attribute.id;
       data.attributeColor = attribute.color;
-      data.attributeType = attribute.type;
+      data.attributeSize = attribute.size;
       // Start to create Order
       const doc = await create(data);
       const findOd = await findOrders({ orderId: createOrderMain.id });
       await updateOrderMain({ id: createOrderMain.id }, { totalPrice: totalValueObject(findOd) });
-      res.json(doc);
+      return res.json(doc);
     }
     // if Item ID
     if (data.itemId) {
@@ -131,12 +131,12 @@ async function createOrder(req, res, next) {
       data.categoryId = checkItemStatus.categoryId;
       data.attributeId = attribute.id;
       data.attributeColor = attribute.color;
-      data.attributeType = attribute.type;
+      data.attributeSize = attribute.size;
       // Start to create Order
       const doc = await create(data);
       const findOd = await findOrders({ orderId: createOrderMain.id });
       await updateOrderMain({ id: createOrderMain.id }, { totalPrice: totalValueObject(findOd) });
-      res.json(doc);
+      return res.json(doc);
     }
   } else if (data.flashsaleId) {
     // Check FlashSale Exists
@@ -168,12 +168,13 @@ async function createOrder(req, res, next) {
     data.categoryId = checkFlashSaleExist.categoryId;
     data.attributeId = attribute.id;
     data.attributeColor = attribute.color;
-    data.attributeType = attribute.type;
+    data.attributeSize = attribute.size;
     // voucher applied
     if (findBeforeCreate.code) {
       const findItemExits = await findOrder({
         flashsaleId: data.flashsaleId,
         attributeId: data.attributeId,
+        itemId: data.itemId,
       });
       if (findItemExits === null) {
         const findV = await findVoucher({ code: findBeforeCreate.code });
@@ -257,16 +258,17 @@ async function createOrder(req, res, next) {
     data.itemId = checkItemExist.id;
     data.itemName = checkItemExist.name;
     data.itemPrice = checkItemExist.sellingPrice;
-    data.total = data.quantity * data.sellingPrice;
+    data.total = data.itemQuantity * data.itemPrice;
     data.itemImg = checkItemExist.mainimg;
     data.categoryId = checkItemExist.categoryId;
     data.attributeId = attribute.id;
     data.attributeColor = attribute.color;
-    data.attributeType = attribute.type;
+    data.attributeSize = attribute.size;
     // voucher applied
     if (findBeforeCreate.code) {
       const findItemExits = await findOrder({
         itemId: data.itemId,
+        flashsaleId: null,
         attributeId: data.attributeId,
       });
       if (findItemExits === null) {
@@ -299,6 +301,7 @@ async function createOrder(req, res, next) {
     if (!findBeforeCreate.code) {
       const findItemExits = await findOrder({
         itemId: data.itemId,
+        flashsaleId: null,
         attributeId: data.attributeId,
       });
       if (findItemExits === null) {
@@ -312,10 +315,10 @@ async function createOrder(req, res, next) {
       }
       data.itemQuantity = findItemExits.itemQuantity + data.itemQuantity;
       await updateOrder(
-        { id: findItemExits.id, attributeId: data.attributeId },
+        { id: findItemExits.id, attributeId: data.attributeId, flashsaleId: null },
         {
           itemQuantity: data.itemQuantity,
-          total: data.total,
+          total: data.itemQuantity * data.itemPrice,
           itemDiscount: data.itemDiscount,
           itemNewPrice: data.itemNewPrice,
         },
@@ -372,10 +375,14 @@ async function orderRemoveVoucher(req, res, next) {
   if (!findOrderMain) {
     return next(err.notFound());
   }
-  await updateOrderMain({ id: findOrderMain.id }, { code: null });
+
   const findOd = await findOrders({ orderId: findOrderMain.id });
   const toJson = JSON.parse(JSON.stringify(findOd));
   const update = await removeCode(toJson);
+  await updateOrderMain(
+    { id: findOrderMain.id },
+    { totalPrice: totalValueObject(update), code: null },
+  );
   res.json(update);
 }
 async function deleteOneOrder(req, res, next) {
@@ -398,9 +405,11 @@ async function completeOrder(req, res, next) {
   const findOrderMain = await findMain({ userId: userId.id }, { status: STATUS.awaitpurchase });
   const findOds = await findOrders({ orderId: findOrderMain.id });
   const toJson = JSON.parse(JSON.stringify(findOds));
-  const updateVQ = await updateQVoucher({ code: findOrderMain.code });
-  if (updateVQ.message) {
-    return next(updateVQ);
+  if (findOrderMain.code) {
+    const updateVQ = await updateQVoucher({ code: findOrderMain.code });
+    if (updateVQ.message) {
+      return next(updateVQ);
+    }
   }
   for (let i = 0; i < toJson.length; i++) {
     if (toJson[i].flashsaleId) {

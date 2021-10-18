@@ -12,7 +12,7 @@ const {
 } = require('./attribute.controller');
 
 app.get('/admin/attribute', Auth, all);
-app.get('/admin/attribute/:itemId', Auth, itemAttributes);
+app.get('/admin/attribute/:itemId', itemAttributes);
 app.post('/admin/attribute/create', Auth, createAttribute);
 app.post('/admin/attribute/update', Auth, updateAttribute);
 app.post('/admin/attribute/delete', Auth, deleteAttribute);

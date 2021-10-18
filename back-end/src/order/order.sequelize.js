@@ -64,9 +64,8 @@ Order.init(
     attributeColor: {
       type: DataTypes.STRING,
     },
-    attributeType: {
+    attributeSize: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   {

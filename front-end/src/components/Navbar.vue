@@ -130,4 +130,5 @@ a {
 .Navbar .container {
     width: 1140px;
 }
+
 </style>

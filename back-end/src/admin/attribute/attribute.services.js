@@ -3,11 +3,9 @@ const Error = require('../../../errors/errors');
 
 const err = new Error();
 
-async function find(page) {
+async function find() {
   const doc = await AttributeData.find();
-  const itemPerPage = 5;
-  const pagni = doc.slice(page * itemPerPage - itemPerPage, page * itemPerPage);
-  return pagni;
+  return doc;
 }
 async function findItemId(id) {
   const doc = await AttributeData.findOne(id);

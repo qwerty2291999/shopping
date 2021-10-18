@@ -28,6 +28,49 @@
                     <p>Barcode : {{ obj.barcode }}</p>
                     <p>In storage : {{ obj.quantity }}</p>
                     <p>Description : {{ obj.desciption }}</p>
+                    <div class="attributes">
+                        <ul>
+                            <li
+                                v-for="(item, i) in attributeList"
+                                v-bind:key="item.id"
+                                v-on:click="selectAtt(item.id)"
+                                @click="current = i"
+                                v-bind:class="{ current: i == current }"
+                            >
+                                <p v-if="item.color">
+                                    {{ item.color }}
+                                </p>
+                                <p v-else>{{ item.size }}</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="input">
+                        <input
+                            :disabled="true"
+                            v-model="quantity"
+                            type="text"
+                        />
+                        <button
+                            @click="minus"
+                            type="button"
+                            class="btn btn-danger minus"
+                        >
+                            -
+                        </button>
+                        <button
+                            @click="plus"
+                            type="button"
+                            class="btn btn-primary plus"
+                        >
+                            +
+                        </button>
+                    </div>
+                    <br /><br />
+                    <div class="buy">
+                        <button type="button" class="btn btn-primary">
+                            BUY NOW
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,10 +94,16 @@ export default {
                 this.obj = res.data;
                 this.list = res.data.detailimgs;
                 this.mainImg = res.data.mainimg.filename;
-                console.log(this.list);
             } catch (e) {
                 console.log(e);
             }
+        },
+        async getA() {
+            const res = await axios.get(
+                `http://localhost:3000/admin/attribute/${this.id}`
+            );
+            this.attributeList = res.data;
+            this.currentAttribute = res.data[0].id;
         },
         changeImage(src) {
             this.mainImg = src;
@@ -63,24 +112,65 @@ export default {
         renderImg() {
             return this.baseImgUrl + this.mainImg;
         },
+        minus() {
+            if (this.quantity == 1) {
+                this.quantity = 1;
+            } else {
+                this.quantity--;
+            }
+        },
+        plus() {
+            this.quantity++;
+        },
+        selectAtt(id) {
+            this.currentAttribute = id;
+        },
     },
-    mounted() {
-        this.get();
-        this.renderImg();
+    async mounted() {
+        await this.get();
+        await this.getA();
     },
     data() {
         return {
             id: this.$route.params.id,
             obj: [],
             list: [],
+            attributeList: [],
+            currentAttribute: "",
             baseImgUrl: "http://127.0.0.1:8089/",
             mainImg: "",
             rf: 0,
+            quantity: 1,
+            current: 0,
         };
     },
 };
 </script>
 <style scoped>
+.attributes {
+    height: 24px;
+}
+.current {
+    background: black;
+}
+.attributes ul {
+    display: flex;
+    margin: 20px 0px;
+}
+.attributes ul li {
+    margin: 0px 5px 0px 0px;
+    width: 60px;
+    border: 1px solid rgb(206, 206, 206);
+    border-radius: 5px;
+}
+.attributes ul li p {
+    margin: 0px 5px 0px 0px;
+    font-size: 15px;
+    line-height: 30px;
+    text-align: center;
+    border-bottom: 0px;
+    cursor: pointer;
+}
 .container {
     width: 1140px;
     display: flex;
@@ -142,5 +232,34 @@ li {
 }
 .data p:first-child {
     color: red;
+}
+input {
+    border: 1px solid black;
+    width: 80px;
+}
+input:focus {
+    outline: none;
+}
+.input {
+    display: block;
+    position: relative;
+    margin: 20px 0px;
+}
+input {
+    display: block;
+    position: absolute;
+    left: 0px;
+}
+.minus {
+    width: 35px;
+    line-height: 12.5px;
+    position: absolute;
+    left: 80px;
+}
+.plus {
+    width: 35px;
+    line-height: 12.5px;
+    position: absolute;
+    left: 115px;
 }
 </style>
