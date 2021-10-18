@@ -25,6 +25,9 @@
                 <div v-bind:key="obj.id" class="data">
                     <h5>Name : {{ obj.name }}</h5>
                     <p>Price : {{ obj.sellingPrice }}</p>
+                    <p>Barcode : {{ obj.barcode }}</p>
+                    <p>In storage : {{ obj.quantity }}</p>
+                    <p>Description : {{ obj.desciption }}</p>
                 </div>
             </div>
         </div>
