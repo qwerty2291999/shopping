@@ -32,19 +32,23 @@
                                 </div>
                             </router-link>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-success" href="#"
-                                >Products</a
-                            >
-                        </li>
+                        <router-link to="/products">
+                            <li class="nav-item">
+                                <a class="nav-link text-success" href="#"
+                                    >Products</a
+                                >
+                            </li>
+                        </router-link>
                         <li class="nav-item">
                             <a class="nav-link text-success" href="#">Sales</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-success" href="#"
-                                >Your Orders</a
-                            >
-                        </li>
+                        <router-link to="/myorders">
+                            <li class="nav-item">
+                                <a class="nav-link text-success" href="#"
+                                    >Your Orders</a
+                                >
+                            </li>
+                        </router-link>
                     </ul>
                     <router-link to="/auth/login">
                         <button
@@ -71,6 +75,7 @@
 
 <script>
 import Home from "../views/Home.vue";
+// import Orders from "../views/Orders.vue";
 export default {
     name: "Navbar",
     props: {
@@ -130,5 +135,4 @@ a {
 .Navbar .container {
     width: 1140px;
 }
-
 </style>

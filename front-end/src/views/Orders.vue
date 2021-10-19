@@ -1,5 +1,5 @@
 <template>
-    <div class="product">
+    <div class="orders">
         <Navbar msg="Nav" />
         <OrdersBody msg="Body" />
     </div>
@@ -11,7 +11,7 @@ import Navbar from "../components/Navbar.vue";
 import OrdersBody from "../components/OrdersBody.vue";
 
 export default {
-    name: "Product",
+    name: "Orders",
     components: {
         Navbar,
         OrdersBody,

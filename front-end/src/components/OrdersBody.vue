@@ -15,11 +15,11 @@
                         <th scope="col">Remove</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody :key="ref">
                     <tr v-for="(item, i) in list" :key="item.id">
                         <th scope="row">{{ i }}</th>
                         <td>{{ item.id }}</td>
-                        <td>Otto</td>
+                        <td>Chưa Làm</td>
                         <td>{{ item.itemName }}</td>
                         <td>{{ item.itemPrice }}</td>
                         <td>{{ item.itemQuantity }}</td>
@@ -36,11 +36,33 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="input-group mb-3 code">
+                <input
+                    type="text"
+                    class="form-control"
+                    v-model="code"
+                    aria-describedby="basic-addon2"
+                />
+                <div class="input-group-append">
+                    <button
+                        @click="reRender"
+                        class="btn btn-outline-danger"
+                        type="button"
+                    >
+                        Apply Code
+                    </button>
+                </div>
+            </div>
             <div class="total">
                 <div class="info">
                     <h5>Total Price :</h5>
                     <br />
                     <p>{{ total }}</p>
+                    <br />
+                    <p v-if="code != null">Code Applied : {{ code }}</p>
+                    <p v-else>
+                        Code Applied : None
+                    </p>
                     <br />
                     <button type="button" class="btn btn-success">
                         Complete !
@@ -83,9 +105,15 @@ export default {
                     }
                 );
                 this.total = res.data.totalPrice;
+                this.code = res.data.code;
             } catch (e) {
                 console.log(e);
             }
+        },
+        async reRender() {
+            await this.get();
+            await this.getPrice();
+            this.ref++;
         },
     },
     async mounted() {
@@ -96,6 +124,8 @@ export default {
         return {
             list: [],
             total: "",
+            code: "",
+            ref: 0,
         };
     },
 };
@@ -107,7 +137,6 @@ export default {
 }
 .total {
     width: 1140px;
-    margin-top: 100px;
     text-align: left;
 }
 .info {
@@ -121,5 +150,8 @@ export default {
 .info p {
     border-bottom: 1px solid rgb(206, 206, 206);
     display: inline-block;
+}
+.code {
+    width: 200px;
 }
 </style>

@@ -67,9 +67,20 @@
                     </div>
                     <br /><br />
                     <div class="buy">
-                        <button type="button" class="btn btn-primary">
+                        <button
+                            @click="buy(obj.id)"
+                            type="button"
+                            class="btn btn-primary"
+                        >
                             BUY NOW
                         </button>
+                    </div>
+                    <div
+                        v-show="show"
+                        class="alert alert-success alert"
+                        role="alert"
+                    >
+                        Added to Order.
                     </div>
                 </div>
             </div>
@@ -125,6 +136,28 @@ export default {
         selectAtt(id) {
             this.currentAttribute = id;
         },
+        async buy(id) {
+            try {
+                const create = await axios.post(
+                    `http://localhost:3000/myorder/create`,
+                    {
+                        itemId: id,
+                        itemQuantity: this.quantity,
+                        itemAttributeId: this.currentAttribute,
+                    },
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            token: `Bearer ${localStorage.accessToken}`,
+                        },
+                    }
+                );
+                this.show = true;
+                console.log(create);
+            } catch (e) {
+                this.log = e.response.data.message;
+            }
+        },
     },
     async mounted() {
         await this.get();
@@ -142,6 +175,7 @@ export default {
             rf: 0,
             quantity: 1,
             current: 0,
+            show: false,
         };
     },
 };
@@ -170,6 +204,9 @@ export default {
     text-align: center;
     border-bottom: 0px;
     cursor: pointer;
+}
+.alert {
+    margin-top: 70px;
 }
 .container {
     width: 1140px;
