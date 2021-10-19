@@ -26,7 +26,7 @@
                         >
                             Apply for All
                         </p>
-                        <p style="color:red">
+                        <p :v-bind:key="renderKey" style="color:red">
                             Time Left : {{ countDown(item.endDate) }}
                         </p>
                         <p class="code">{{ item.code }}</p>
@@ -49,11 +49,13 @@ export default {
     },
     mounted() {
         this.get();
+        this.reRender();
     },
     data() {
         return {
             voucherList: [],
             show: true,
+            renderKey: 0,
         };
     },
     methods: {
@@ -76,6 +78,11 @@ export default {
                 (timeLeft % min) / sec
             )}s.`;
             return timerCountDown;
+        },
+        reRender() {
+            setInterval(() => {
+                this.renderKey++;
+            }, 1000);
         },
     },
 };

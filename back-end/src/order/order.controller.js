@@ -220,10 +220,10 @@ async function createOrder(req, res, next) {
       }
       data.itemQuantity = findItemExits.itemQuantity + data.itemQuantity;
       await updateOrder(
-        { id: findItemExits.id, attributeId: data.attributeId },
+        { id: findItemExits.id, attributeId: data.attributeId, orderId: findBeforeCreate.id },
         {
           itemQuantity: data.itemQuantity,
-          total: data.total,
+          total: data.itemQuantity * data.itemPrice,
           itemDiscount: data.itemDiscount,
           itemNewPrice: data.itemNewPrice,
         },
@@ -270,6 +270,7 @@ async function createOrder(req, res, next) {
         itemId: data.itemId,
         flashsaleId: null,
         attributeId: data.attributeId,
+        orderId: findBeforeCreate.id,
       });
       if (findItemExits === null) {
         const findV = await findVoucher({ code: findBeforeCreate.code });
@@ -286,7 +287,7 @@ async function createOrder(req, res, next) {
       data.itemQuantity = findItemExits.itemQuantity + data.itemQuantity;
       const newItem = discountOne(data, findV);
       await updateOrder(
-        { id: findItemExits.id, attributeId: data.attributeId },
+        { id: findItemExits.id, attributeId: data.attributeId, orderId: findBeforeCreate.id },
         {
           itemQuantity: newItem.itemQuantity,
           total: newItem.total,
@@ -302,6 +303,7 @@ async function createOrder(req, res, next) {
       const findItemExits = await findOrder({
         itemId: data.itemId,
         flashsaleId: null,
+        orderId: findBeforeCreate.id,
         attributeId: data.attributeId,
       });
       if (findItemExits === null) {
@@ -315,7 +317,12 @@ async function createOrder(req, res, next) {
       }
       data.itemQuantity = findItemExits.itemQuantity + data.itemQuantity;
       await updateOrder(
-        { id: findItemExits.id, attributeId: data.attributeId, flashsaleId: null },
+        {
+          id: findItemExits.id,
+          attributeId: data.attributeId,
+          flashsaleId: null,
+          orderId: findBeforeCreate.id,
+        },
         {
           itemQuantity: data.itemQuantity,
           total: data.itemQuantity * data.itemPrice,
@@ -415,22 +422,23 @@ async function completeOrder(req, res, next) {
     if (toJson[i].flashsaleId) {
       const e = await updateQSale({ id: toJson[i].flashsaleId }, toJson[i].itemQuantity);
       if (e.message) {
-        next(e);
-        break;
+        return next(e);
       }
     }
     if (toJson[i].flashsaleId == null) {
       const a = await updateQItem({ id: toJson[i].itemId }, toJson[i].itemQuantity);
       if (a.code) {
-        next(a);
-        break;
+        return next(a);
       }
     }
   }
   const updateMain = await updateOrderMain({ userId: userId.id }, { status: STATUS.purchased });
-  if (updateMain[0] === 1) {
-    res.json('Purchased!');
-  }
+  res.json(updateMain);
+}
+async function getPrice(req, res) {
+  const userId = req.user;
+  const findOrderMain = await findMain({ userId: userId.id }, { status: STATUS.awaitpurchase });
+  res.json(findOrderMain);
 }
 module.exports = {
   all,
@@ -439,4 +447,5 @@ module.exports = {
   deleteOneOrder,
   completeOrder,
   orderRemoveVoucher,
+  getPrice,
 };

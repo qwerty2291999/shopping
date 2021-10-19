@@ -10,9 +10,11 @@ const {
   deleteOneOrder,
   completeOrder,
   orderRemoveVoucher,
+  getPrice,
 } = require('./order.controller');
 
 app.get('/myorder', Auth, all);
+app.get('/myorderprice', Auth, getPrice);
 app.post('/myorder/create', Auth, createOrder);
 app.post('/myorder/applyvoucher', Auth, orderApplyVoucher);
 app.post('/myorder/delete', Auth, deleteOneOrder);
