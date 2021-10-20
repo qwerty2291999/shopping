@@ -5,7 +5,9 @@
             <a href="#">View More...</a>
         </div>
         <div class="list-item">
-            <p v-show="true">{{ log }}</p>
+            <div v-show="show" class="alert alert-success alert" role="alert">
+                {{ log }}
+            </div>
             <ul>
                 <li v-for="item in saleList.slice(0, 4)" v-bind:key="item.id">
                     <div class="item">
@@ -106,7 +108,7 @@ export default {
                         }
                     );
                     this.log = `Added item ${create.data.flashsaleId} to order`;
-                    console.log(this.log);
+                    this.show = true;
                 } catch (e) {
                     this.show = true;
                     this.log = e.response.data.message;

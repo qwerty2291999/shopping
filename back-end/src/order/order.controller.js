@@ -382,7 +382,6 @@ async function orderRemoveVoucher(req, res, next) {
   if (!findOrderMain) {
     return next(err.notFound());
   }
-
   const findOd = await findOrders({ orderId: findOrderMain.id });
   const toJson = JSON.parse(JSON.stringify(findOd));
   const update = await removeCode(toJson);
@@ -394,6 +393,7 @@ async function orderRemoveVoucher(req, res, next) {
 }
 async function deleteOneOrder(req, res, next) {
   const { id } = req.body;
+  const userId = req.user;
   const validate = joiId.validate({ id });
   if (validate.error) {
     validate.error.code = HTTP.StatusCodes.BAD_REQUEST;
@@ -401,6 +401,9 @@ async function deleteOneOrder(req, res, next) {
   } else {
     const doc = await deleteOrder({ id });
     if (doc === 1) {
+      const findOrderMain = await findMain({ userId: userId.id }, { status: STATUS.awaitpurchase });
+      const findOd = await findOrders({ orderId: findOrderMain.id });
+      await updateOrderMain({ id: findOrderMain.id }, { totalPrice: totalValueObject(findOd) });
       res.status(HTTP.StatusCodes.OK).json({ message: 'DELETED!' });
     } else {
       next(err.notFound());
@@ -440,6 +443,12 @@ async function getPrice(req, res) {
   const findOrderMain = await findMain({ userId: userId.id }, { status: STATUS.awaitpurchase });
   res.json(findOrderMain);
 }
+async function updateOrderAddress(req, res) {
+  const data = req.body;
+  const userId = req.user;
+  const updateMain = await updateOrderMain({ userId: userId.id }, data);
+  res.json(updateMain);
+}
 module.exports = {
   all,
   createOrder,
@@ -448,4 +457,5 @@ module.exports = {
   completeOrder,
   orderRemoveVoucher,
   getPrice,
+  updateOrderAddress,
 };

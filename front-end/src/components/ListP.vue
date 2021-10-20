@@ -9,6 +9,7 @@
                         >Search</span
                     >
                     <input
+                        v-model="key"
                         type="text"
                         class="form-control"
                         aria-label="Sizing example input"
@@ -28,7 +29,7 @@
         <div class="bot">
             <div class="list-items">
                 <ul :key="rf">
-                    <li v-for="item in cutPage" :key="item.id" class="li">
+                    <li v-for="item in pageFilter" :key="item.id" class="li">
                         <div class="item" @click="move(item.id)">
                             <img
                                 :src="baseImgUrl + item.mainimg.filename"
@@ -78,6 +79,7 @@ export default {
     },
     async mounted() {
         await this.getData();
+        this.sort();
     },
     data() {
         return {
@@ -88,27 +90,24 @@ export default {
             currentPage: 1,
             itemPerPage: 8,
             rf: 0,
+            key: "",
         };
     },
     methods: {
+        async sort() {
+            console.log(this.filter.length);
+        },
         async getData() {
             try {
                 const res = await axios.get(`http://localhost:3000/item`);
                 this.listItem = res.data;
-                this.pageCount = Math.ceil(
-                    this.listItem.length / this.itemPerPage
-                );
-                this.cutPage = this.listItem.slice(
-                    this.itemPerPage * this.currentPage - this.itemPerPage,
-                    this.itemPerPage * this.currentPage
-                );
             } catch (e) {
                 console.log(e);
             }
         },
         nextPage(index) {
             this.currentPage = index;
-            this.cutPage = this.listItem.slice(
+            this.cutPage = this.filter.slice(
                 this.itemPerPage * this.currentPage - this.itemPerPage,
                 this.itemPerPage * this.currentPage
             );
@@ -116,6 +115,22 @@ export default {
         },
         move(id) {
             this.$router.push(`/product/${id}`);
+        },
+    },
+    computed: {
+        filter: function() {
+            return this.listItem.filter((item) => {
+                return item.name.toLowerCase().match(this.key.toLowerCase());
+            });
+        },
+        pageFilter: function() {
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            this.pageCount = Math.ceil(this.filter.length / this.itemPerPage);
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            return (this.cutPage = this.filter.slice(
+                this.itemPerPage * this.currentPage - this.itemPerPage,
+                this.itemPerPage * this.currentPage
+            ));
         },
     },
 };
