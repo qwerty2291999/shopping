@@ -71,7 +71,6 @@ export default {
     },
     async mounted() {
         await this.getData();
-        this.sort();
     },
     data() {
         return {

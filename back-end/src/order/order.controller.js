@@ -102,7 +102,7 @@ async function createOrder(req, res, next) {
       return res.json(doc);
     }
     // if Item ID
-    if (data.itemId) {
+    if (data.flashsaleId) {
       // Check Flashsale exist and status
       const checkItemStatus = await findItem({ id: data.itemId });
       if (checkItemStatus == null) {
@@ -175,6 +175,7 @@ async function createOrder(req, res, next) {
         flashsaleId: data.flashsaleId,
         attributeId: data.attributeId,
         itemId: data.itemId,
+        orderId: findBeforeCreate.id,
       });
       if (findItemExits === null) {
         const findV = await findVoucher({ code: findBeforeCreate.code });
@@ -208,6 +209,7 @@ async function createOrder(req, res, next) {
       const findItemExits = await findOrder({
         flashsaleId: data.flashsaleId,
         attributeId: data.attributeId,
+        orderId: findBeforeCreate.id,
       });
       if (findItemExits === null) {
         const doc = await create(data);
