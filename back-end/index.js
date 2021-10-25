@@ -110,3 +110,4 @@ cron.schedule('1 * * * * *', () => {
 app.listen(3000, async () => {
   await connect();
 });
+module.exports = app;
