@@ -17,14 +17,6 @@
                     />
                 </div>
             </div>
-            <div class="sort">
-                <p><b>Sort by : </b></p>
-                <select class="form-select" aria-label="Default select example">
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
-            </div>
         </div>
         <div class="bot">
             <div class="list-items">
@@ -88,7 +80,7 @@ export default {
             baseImgUrl: "http://127.0.0.1:8089/",
             pageCount: "",
             currentPage: 1,
-            itemPerPage: 8,
+            itemPerPage: 4,
             rf: 0,
             key: "",
         };

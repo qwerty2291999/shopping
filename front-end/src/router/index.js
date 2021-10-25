@@ -4,6 +4,11 @@ import Login from "../views/Login.vue";
 import Product from "../views/Products.vue";
 import Orders from "../views/Orders.vue";
 import ListProduct from "../views/ListProduct.vue";
+import AdminLogin from "../views/AdminLogin.vue";
+import AdminHome from "../views/AdminHome.vue";
+import AdminPAdd from "../views/AdminPAdd.vue";
+import AdminPAll from "../views/AdminPAll.vue";
+import AdminPEdit from "../views/AdminPEdit.vue";
 const routes = [
     {
         path: "/",
@@ -29,6 +34,31 @@ const routes = [
         path: "/products",
         name: "ListProducts",
         component: ListProduct,
+    },
+    {
+        path: "/admin/login",
+        name: "AdminLogin",
+        component: AdminLogin,
+    },
+    {
+        path: "/admin",
+        name: "AdminHome",
+        component: AdminHome,
+    },
+    {
+        path: "/admin/product/create",
+        name: "AdminPAdd",
+        component: AdminPAdd,
+    },
+    {
+        path: "/admin/product/all",
+        name: "AdminPAll",
+        component: AdminPAll,
+    },
+    {
+        path: "/admin/product/editinfo/:id",
+        name: "AdminPEdit",
+        component: AdminPEdit,
     },
 ];
 
